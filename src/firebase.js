@@ -4,13 +4,14 @@ import { getFirestore } from 'firebase/firestore'
 
 // Firebase config using environment variables
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-}
+  apiKey: "AIzaSyBBa5Fa9LTxnxWFzgXKlooQsKHLSlCJjqg",
+  authDomain: "saylanihack2026.firebaseapp.com",
+  projectId: "saylanihack2026",
+  storageBucket: "saylanihack2026.firebasestorage.app",
+  messagingSenderId: "835399617062",
+  appId: "1:835399617062:web:fbfcf8ad91859ee0beb4e7",
+  measurementId: "G-XB4C6BVGJ9"
+};
 
 const app = initializeApp(firebaseConfig)
 
