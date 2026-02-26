@@ -25,7 +25,9 @@ export default function Signup() {
       await createUserWithEmailAndPassword(auth, email, password)
       navigate('/dashboard')
     } catch (err) {
-      setError(err.message)
+      console.error('Signup error', err)
+      // show code as well so you can see what Firebase is complaining about
+      setError(`${err.code}: ${err.message}`)
     } finally {
       setLoading(false)
     }
