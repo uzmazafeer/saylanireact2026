@@ -1,0 +1,43 @@
+.app-root {
+  background: #f5f7fb;
+}
+
+.brand-logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #66b032, #0057a8);
+}
+
+.min-vh-75 {
+  min-height: 75vh;
+}
+
+.overview-card {
+  background: linear-gradient(135deg, #0057a8, #66b032);
+  border-radius: 1rem;
+}
+
+.overview-lost {
+  background: linear-gradient(135deg, #0057a8, #4bb543);
+}
+
+.overview-complaints {
+  background: linear-gradient(135deg, #ff7f50, #ffb347);
+}
+
+.overview-volunteers {
+  background: linear-gradient(135deg, #66b032, #2e8b57);
+}
+
+.list-group-item.active {
+  background-color: #0057a8;
+  border-color: #0057a8;
+}
+
+.bg-success-subtle {
+  background-color: #d1f2d2 !important;
+}
+
+.bg-danger-subtle {
+  background-color: #f8d7da !important;
+}
