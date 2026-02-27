@@ -3,8 +3,12 @@ import LostFound from './LostFound'
 import Complaints from './Complaints'
 import Volunteers from './Volunteers'
 import Overview from './Overview'
+import AdminPanel from './AdminPanel'
+import { useAuth } from '../auth/AuthContext'
 
 export default function Dashboard() {
+  const { isAdmin } = useAuth()
+
   return (
     <div className="container">
       <div className="row g-3">
@@ -55,6 +59,16 @@ export default function Dashboard() {
             >
               Volunteers
             </NavLink>
+            {isAdmin && (
+              <NavLink
+                to="admin"
+                className={({ isActive }) =>
+                  `list-group-item list-group-item-action ${isActive ? 'active' : ''}`
+                }
+              >
+                Admin Panel
+              </NavLink>
+            )}
           </div>
         </div>
         <div className="col-md-9 col-lg-10">
@@ -63,6 +77,7 @@ export default function Dashboard() {
             <Route path="lost-found" element={<LostFound />} />
             <Route path="complaints" element={<Complaints />} />
             <Route path="volunteers" element={<Volunteers />} />
+            {isAdmin && <Route path="admin" element={<AdminPanel />} />}
             <Route path="*" element={<Navigate to="." replace />} />
           </Routes>
         </div>

@@ -2,6 +2,8 @@ import { createContext, useContext, useEffect, useState } from 'react'
 import { onAuthStateChanged, signOut } from 'firebase/auth'
 import { auth } from '../firebase'
 
+const ADMIN_EMAILS = ['admin@smit.com']
+
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
@@ -20,8 +22,10 @@ export function AuthProvider({ children }) {
     await signOut(auth)
   }
 
+  const isAdmin = !!user && ADMIN_EMAILS.includes(user.email || '')
+
   return (
-    <AuthContext.Provider value={{ user, loading, logout }}>
+    <AuthContext.Provider value={{ user, loading, logout, isAdmin }}>
       {children}
     </AuthContext.Provider>
   )
@@ -34,4 +38,5 @@ export function useAuth() {
   }
   return ctx
 }
+
 
