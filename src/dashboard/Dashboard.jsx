@@ -5,7 +5,6 @@ import Volunteers from './Volunteers'
 import Overview from './Overview'
 import AdminPanel from './AdminPanel'
 import { useAuth } from '../auth/AuthContext'
-import NotFound from '../NotFound'
 
 export default function Dashboard() {
   const { isAdmin } = useAuth()
@@ -79,8 +78,8 @@ export default function Dashboard() {
             <Route path="complaints" element={<Complaints />} />
             <Route path="volunteers" element={<Volunteers />} />
             {isAdmin && <Route path="admin" element={<AdminPanel />} />}
-            {/* show 404 inside dashboard when sub-path unrecognized */}
-            <Route path="*" element={<NotFound />} />
+            {/* any unknown sub-path inside dashboard will go back to Overview */}
+            <Route path="*" element={<Navigate to="." replace />} />
           </Routes>
         </div>
       </div>
