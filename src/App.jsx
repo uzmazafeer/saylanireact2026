@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './auth/AuthContext'
 import Login from './auth/Login'
 import Signup from './auth/Signup'
 import Dashboard from './dashboard/Dashboard'
+import NotFound from './NotFound'
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
@@ -80,7 +81,8 @@ function App() {
               </ProtectedRoute>
             }
           />
-          <Route path="*" element={<Navigate to="/login" replace />} />
+          {/* catch-all: show 404 instead of redirecting */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Layout>
     </AuthProvider>
