@@ -34,6 +34,35 @@
   border-color: #0057a8;
 }
 
+.list-group-item {
+  border: 0;
+  border-radius: 0;
+  font-weight: 500;
+}
+
+.list-group-item + .list-group-item {
+  border-top: 1px solid #f0f2f7;
+}
+
+.navbar {
+  backdrop-filter: blur(8px);
+}
+
+.card {
+  border-radius: 1rem;
+}
+
+.table thead th {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
 .bg-success-subtle {
   background-color: #d1f2d2 !important;
 }
@@ -41,3 +70,67 @@
 .bg-danger-subtle {
   background-color: #f8d7da !important;
 }
+
+/* Saylani themed buttons */
+
+.btn {
+  border-radius: 999px;
+  font-weight: 500;
+  padding-inline: 1.4rem;
+  padding-block: 0.5rem;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.1s ease,
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.btn:active {
+  transform: translateY(1px);
+  box-shadow: none !important;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #0057a8, #0076e0);
+  border-color: #0057a8;
+  box-shadow: 0 6px 16px rgba(0, 87, 168, 0.35);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #00467f, #0061b8);
+  border-color: #00467f;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #66b032, #4bb543);
+  border-color: #4bb543;
+  box-shadow: 0 6px 16px rgba(75, 181, 67, 0.35);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #55942a, #3a9636);
+  border-color: #3a9636;
+}
+
+.btn-outline-primary {
+  border-color: #0057a8;
+  color: #0057a8;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0057a8;
+  color: #ffffff;
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: #ffffff;
+}
+
+
