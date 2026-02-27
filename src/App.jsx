@@ -49,7 +49,7 @@ function Layout({ children }) {
                 <span className="small text-muted d-none d-md-inline">
                   Signed in as <span className="fw-semibold text-primary">{user.email}</span>
                 </span>
-                <button className="btn btn-outline-primary btn-sm" onClick={logout}>
+                <button className="btn btn-logout btn-sm" onClick={logout}>
                   Logout
                 </button>
               </>

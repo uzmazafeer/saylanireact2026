@@ -123,6 +123,19 @@
   color: #ffffff;
 }
 
+.btn-logout {
+  background: linear-gradient(135deg, #ff4b5c, #ff7f50);
+  border-color: #ff4b5c;
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(255, 75, 92, 0.35);
+}
+
+.btn-logout:hover {
+  background: linear-gradient(135deg, #e43a4b, #ff6633);
+  border-color: #e43a4b;
+  color: #ffffff;
+}
+
 .btn-outline-secondary {
   border-color: #6c757d;
   color: #6c757d;
