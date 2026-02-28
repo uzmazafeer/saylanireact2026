@@ -8,6 +8,7 @@ import {
 import html2canvas from 'html2canvas'
 import { db } from '../firebase'
 import { useAuth } from '../auth/AuthContext'
+console.log("Volunteers component rendered")
 
 function VolunteerIdCard({ volunteer, cardRef }) {
   if (!volunteer) return null
