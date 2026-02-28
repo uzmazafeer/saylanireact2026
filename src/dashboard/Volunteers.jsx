@@ -55,26 +55,49 @@ export default function Volunteers() {
   const [availability, setAvailability] = useState('')
   const [loading, setLoading] = useState(false)
   const [volunteers, setVolunteers] = useState([])
+  const [loadingVolunteers, setLoadingVolunteers] = useState(true)
   const [selectedForCard, setSelectedForCard] = useState(null)
   const [error, setError] = useState(null)
   const cardRef = useRef(null)
 
+  // subscribe for volunteers after auth is available
   useEffect(() => {
+    // reset state if user signs out
+    if (!user) {
+      setVolunteers([])
+      setError(null)
+      setLoadingVolunteers(false)
+      return
+    }
+
+    setLoadingVolunteers(true)
     const unsub = onSnapshot(
       collection(db, 'volunteers'),
       snapshot => {
         const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-        data.sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+        data.sort((a, b) =>
+          (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0)
+        )
+        console.debug('volunteers snapshot', data)
         setVolunteers(data)
         setError(null)
+        setLoadingVolunteers(false)
       },
-      err => setError(err?.message || 'Could not load volunteers')
+      err => {
+        console.error('volunteers listener error', err)
+        setError(err?.message || 'Could not load volunteers')
+        setLoadingVolunteers(false)
+      }
     )
     return () => unsub()
-  }, [])
+  }, [user])
 
   const handleSubmit = async e => {
     e.preventDefault()
+    if (!user) {
+      setError('You must be signed in to register a volunteer.')
+      return
+    }
     if (!name?.trim() || !event?.trim() || !availability?.trim()) return
     setLoading(true)
     setError(null)
@@ -112,6 +135,14 @@ export default function Volunteers() {
     } catch (err) {
       console.error('Download failed:', err)
     }
+  }
+
+  if (!user) {
+    return (
+      <div className="w-full min-h-[400px] rounded-2xl bg-white shadow-lg border border-gray-200 overflow-hidden flex items-center justify-center">
+        <p className="text-gray-600">Please sign in to view volunteers.</p>
+      </div>
+    )
   }
 
   return (
@@ -185,13 +216,22 @@ export default function Volunteers() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
-              {volunteers.length === 0 && (
+              {loadingVolunteers ? (
+                <tr>
+                  <td
+                    colSpan={4}
+                    className="px-4 py-8 text-center text-gray-500"
+                  >
+                    Loading volunteers...
+                  </td>
+                </tr>
+              ) : volunteers.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
                     No volunteers registered yet. Register using the form above.
                   </td>
                 </tr>
-              )}
+              ) : null}
               {volunteers.map(v => (
                 <tr key={v.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium text-gray-800">{v.name}</td>
