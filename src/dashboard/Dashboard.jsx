@@ -24,7 +24,7 @@ export default function Dashboard() {
               Overview
             </Link>
             <Link
-              to="lost-found"
+              to="complaints"
               className="list-group-item list-group-item-action"
             >
               Lost &amp; Found
@@ -36,7 +36,7 @@ export default function Dashboard() {
               Complaints
             </Link>
             <Link
-              to="volunteers"
+              to="complaints"
               className="list-group-item list-group-item-action"
             >
               Volunteers
