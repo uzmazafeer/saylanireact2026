@@ -1,6 +1,6 @@
 import { Link, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
-import './App.css'
+import '../App.css'
 
 import Overview from './Overview'
 import LostFound from './LostFound'
