@@ -21,114 +21,143 @@ export default function Complaints() {
   const [description, setDescription] = useState('')
   const [loading, setLoading] = useState(false)
   const [complaints, setComplaints] = useState([])
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    const q = query(collection(db, 'complaints'), orderBy('createdAt', 'desc'))
-    const unsub = onSnapshot(q, snapshot => {
-      const data = snapshot.docs
-        .map(d => ({ id: d.id, ...d.data() }))
-        .filter(c => c.userId === user?.uid)
-      setComplaints(data)
-    })
+    if (!user?.uid) return
+    const q = query(
+      collection(db, 'complaints'),
+      orderBy('createdAt', 'desc')
+    )
+    const unsub = onSnapshot(
+      q,
+      snapshot => {
+        const data = snapshot.docs
+          .map(d => ({ id: d.id, ...d.data() }))
+          .filter(c => c.userId === user.uid)
+        setComplaints(data)
+        setError(null)
+      },
+      err => {
+        console.error('Complaints listener error:', err)
+        setError(err.message)
+      }
+    )
     return () => unsub()
   }, [user?.uid])
 
   const handleSubmit = async e => {
     e.preventDefault()
-    if (!description) return
+    if (!description?.trim()) return
     setLoading(true)
+    setError(null)
     try {
       await addDoc(collection(db, 'complaints'), {
         category,
-        description,
+        description: description.trim(),
         status: 'Submitted',
         userId: user.uid,
         createdAt: serverTimestamp(),
       })
       setDescription('')
       setCategory(CATEGORIES[0])
+    } catch (err) {
+      console.error(err)
+      setError(err.message)
     } finally {
       setLoading(false)
     }
   }
 
   const handleStatusChange = async (id, status) => {
-    await updateDoc(doc(db, 'complaints', id), { status })
+    try {
+      await updateDoc(doc(db, 'complaints', id), { status })
+    } catch (err) {
+      console.error(err)
+    }
   }
 
   return (
-    <div className="card border-0 shadow-sm">
-      <div className="card-body">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <div>
-            <h5 className="card-title mb-1 text-primary">Complaints</h5>
-            <p className="text-muted small mb-0">
-              Submit campus complaints and track resolution status.
-            </p>
-          </div>
+    <div className="rounded-2xl bg-white/80 backdrop-blur shadow-lg border border-gray-200/60 overflow-hidden">
+      <div className="p-6">
+        <div className="mb-6">
+          <h5 className="text-xl font-bold text-[#0057a8]">Complaints</h5>
+          <p className="text-sm text-gray-600 mt-0.5">
+            Submit campus complaints and track resolution status.
+          </p>
         </div>
-        <form className="row g-3 mb-4" onSubmit={handleSubmit}>
-          <div className="col-md-4">
-            <label className="form-label small">Category</label>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-xl bg-red-50 text-red-700 text-sm">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-12 gap-4 mb-8">
+          <div className="md:col-span-4">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
             <select
-              className="form-select"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-[#0057a8]/30 focus:border-[#0057a8] outline-none bg-white"
               value={category}
               onChange={e => setCategory(e.target.value)}
             >
               {CATEGORIES.map(c => (
-                <option key={c} value={c}>
-                  {c}
-                </option>
+                <option key={c} value={c}>{c}</option>
               ))}
             </select>
           </div>
-          <div className="col-md-8">
-            <label className="form-label small">Description</label>
+          <div className="md:col-span-6">
+            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
             <input
-              className="form-control"
+              type="text"
+              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-[#0057a8]/30 focus:border-[#0057a8] outline-none"
               placeholder="Describe the issue clearly..."
               value={description}
               onChange={e => setDescription(e.target.value)}
               required
             />
           </div>
-          <div className="col-12 d-flex justify-content-end">
-            <button className="btn btn-primary px-4" disabled={loading}>
-              {loading ? 'Submitting...' : 'Submit Complaint'}
+          <div className="md:col-span-2 flex items-end">
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full px-4 py-2.5 rounded-xl font-medium bg-gradient-to-r from-[#0057a8] to-[#0076e0] text-white shadow-md hover:shadow-lg transition disabled:opacity-70"
+            >
+              {loading ? 'Submitting...' : 'Submit'}
             </button>
           </div>
         </form>
-        <div className="table-responsive">
-          <table className="table table-sm align-middle">
-            <thead className="table-light">
+
+        <h6 className="text-gray-700 font-semibold mb-3">My Complaints</h6>
+        <div className="overflow-x-auto rounded-xl border border-gray-200">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-gray-50 text-gray-600 uppercase tracking-wider text-xs">
               <tr>
-                <th>Category</th>
-                <th>Description</th>
-                <th>Status</th>
+                <th className="px-4 py-3 rounded-tl-xl">Category</th>
+                <th className="px-4 py-3">Description</th>
+                <th className="px-4 py-3 rounded-tr-xl">Status</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {complaints.length === 0 && (
                 <tr>
-                  <td colSpan={3} className="text-center text-muted small py-3">
+                  <td colSpan={3} className="px-4 py-8 text-center text-gray-500">
                     No complaints yet.
                   </td>
                 </tr>
               )}
               {complaints.map(c => (
-                <tr key={c.id}>
-                  <td>{c.category}</td>
-                  <td className="small">{c.description}</td>
-                  <td>
+                <tr key={c.id} className="hover:bg-gray-50/50">
+                  <td className="px-4 py-3 font-medium text-gray-800">{c.category}</td>
+                  <td className="px-4 py-3 text-gray-600">{c.description}</td>
+                  <td className="px-4 py-3">
                     <select
-                      className="form-select form-select-sm"
+                      className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm focus:ring-2 focus:ring-[#0057a8]/30 focus:border-[#0057a8] outline-none"
                       value={c.status}
                       onChange={e => handleStatusChange(c.id, e.target.value)}
                     >
                       {STATUS_OPTIONS.map(s => (
-                        <option key={s} value={s}>
-                          {s}
-                        </option>
+                        <option key={s} value={s}>{s}</option>
                       ))}
                     </select>
                   </td>

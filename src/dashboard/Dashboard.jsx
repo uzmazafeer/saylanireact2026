@@ -9,69 +9,28 @@ import { useAuth } from '../auth/AuthContext'
 export default function Dashboard() {
   const { isAdmin } = useAuth()
 
+  const navClass = ({ isActive }) =>
+    `block w-full text-left px-4 py-3 rounded-xl font-medium transition ${isActive ? 'bg-[#0057a8] text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'}`
+
   return (
-    <div className="container">
-      <div className="row g-3">
-        <div className="col-12">
-          <div className="card border-0 shadow-sm mb-3">
-            <div className="card-body d-flex flex-wrap gap-2 justify-content-between align-items-center">
-              <div>
-                <h4 className="mb-1 text-primary">Campus Dashboard</h4>
-                <p className="mb-0 small text-muted">
-                  Manage lost &amp; found, complaints, volunteers and real-time updates.
-                </p>
-              </div>
-            </div>
+    <div className="container mx-auto px-4">
+      <div className="flex flex-col lg:flex-row gap-6">
+        <div className="w-full lg:w-56 shrink-0">
+          <div className="rounded-2xl bg-white/80 backdrop-blur shadow-lg border border-gray-200/60 p-2 mb-4">
+            <h4 className="px-3 py-2 text-sm font-bold text-[#0057a8]">Campus Dashboard</h4>
+            <p className="px-3 pb-3 text-xs text-gray-600">
+              Lost &amp; found, complaints, volunteers.
+            </p>
           </div>
+          <nav className="rounded-2xl bg-white/80 backdrop-blur shadow-lg border border-gray-200/60 p-2 space-y-1">
+            <NavLink to="" end className={navClass}>Overview</NavLink>
+            <NavLink to="lost-found" className={navClass}>Lost &amp; Found</NavLink>
+            <NavLink to="complaints" className={navClass}>Complaints</NavLink>
+            <NavLink to="volunteers" className={navClass}>Volunteers</NavLink>
+            {isAdmin && <NavLink to="admin" className={navClass}>Admin Panel</NavLink>}
+          </nav>
         </div>
-        <div className="col-md-3 col-lg-2">
-          <div className="list-group shadow-sm rounded-3 mb-3">
-            <NavLink
-              to=""
-              end
-              className={({ isActive }) =>
-                `list-group-item list-group-item-action ${isActive ? 'active' : ''}`
-              }
-            >
-              Overview
-            </NavLink>
-            <NavLink
-              to="lost-found"
-              className={({ isActive }) =>
-                `list-group-item list-group-item-action ${isActive ? 'active' : ''}`
-              }
-            >
-              Lost &amp; Found
-            </NavLink>
-            <NavLink
-              to="complaints"
-              className={({ isActive }) =>
-                `list-group-item list-group-item-action ${isActive ? 'active' : ''}`
-              }
-            >
-              Complaints
-            </NavLink>
-            <NavLink
-              to="volunteers"
-              className={({ isActive }) =>
-                `list-group-item list-group-item-action ${isActive ? 'active' : ''}`
-              }
-            >
-              Volunteers
-            </NavLink>
-            {isAdmin && (
-              <NavLink
-                to="admin"
-                className={({ isActive }) =>
-                  `list-group-item list-group-item-action ${isActive ? 'active' : ''}`
-                }
-              >
-                Admin Panel
-              </NavLink>
-            )}
-          </div>
-        </div>
-        <div className="col-md-9 col-lg-10">
+        <div className="flex-1 min-w-0">
           <Routes>
             <Route index element={<Overview />} />
             <Route path="lost-found" element={<LostFound />} />

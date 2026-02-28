@@ -12,10 +12,9 @@ function ProtectedRoute({ children }) {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center vh-100">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Loading...</span>
-        </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-100 via-emerald-50/30 to-sky-100">
+        <div className="w-10 h-10 border-4 border-[#0057a8] border-t-transparent rounded-full animate-spin" role="status" aria-hidden="true" />
+        <span className="sr-only">Loading...</span>
       </div>
     )
   }
@@ -31,25 +30,29 @@ function Layout({ children }) {
   const { user, logout } = useAuth()
 
   return (
-    <div className="app-root bg-light min-vh-100">
-      <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
-        <div className="container">
-          <Link className="navbar-brand d-flex align-items-center gap-2" to={user ? '/dashboard' : '/login'}>
-            <div className="brand-logo rounded-circle d-flex align-items-center justify-content-center">
-              <span className="fw-bold text-white">SMIT</span>
+    <div className="min-h-screen flex flex-col">
+      <nav className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-gray-200/80 shadow-sm">
+        <div className="container mx-auto px-4 flex items-center justify-between h-16">
+          <Link className="flex items-center gap-2" to={user ? '/dashboard' : '/login'}>
+            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#0057a8] to-[#66b032] flex items-center justify-center text-white font-bold text-sm">
+              SMIT
             </div>
-            <div className="d-flex flex-column">
-              <span className="fw-bold text-primary">Saylani Mass IT Hub</span>
-              <small className="text-muted">Campus Portal</small>
+            <div className="flex flex-col">
+              <span className="font-bold text-[#0057a8]">Saylani Mass IT Hub</span>
+              <small className="text-gray-500 text-xs">Campus Portal</small>
             </div>
           </Link>
-          <div className="ms-auto d-flex align-items-center gap-3">
+          <div className="flex items-center gap-3">
             {user && (
               <>
-                <span className="small text-muted d-none d-md-inline">
-                  Signed in as <span className="fw-semibold text-primary">{user.email}</span>
+                <span className="text-sm text-gray-600 hidden md:inline">
+                  Signed in as <span className="font-semibold text-[#0057a8]">{user.email}</span>
                 </span>
-                <button className="btn btn-logout btn-sm" onClick={logout}>
+                <button
+                  type="button"
+                  onClick={logout}
+                  className="px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-[#ff4b5c] to-[#ff7f50] text-white shadow-md hover:shadow-lg transition"
+                >
                   Logout
                 </button>
               </>
@@ -57,8 +60,8 @@ function Layout({ children }) {
           </div>
         </div>
       </nav>
-      <main className="py-4">{children}</main>
-      <footer className="py-3 border-top text-center small text-muted bg-white">
+      <main className="flex-1 py-6">{children}</main>
+      <footer className="py-3 border-t border-gray-200 bg-white/80 text-center text-sm text-gray-500">
         © {new Date().getFullYear()} Saylani Mass IT Hub
       </footer>
     </div>

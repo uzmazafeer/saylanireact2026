@@ -10,7 +10,7 @@ export default function NotFound() {
           <div className="card border-0 shadow-sm text-center p-4 p-md-5">
             <div className="mb-3">
               <span className="badge rounded-pill bg-primary-subtle text-primary px-3 py-2">
-                404 – Page Not Found
+                404  Page Not Found
               </span>
             </div>
             <h2 className="mb-2 fw-bold text-primary">Oops! Page not found</h2>
