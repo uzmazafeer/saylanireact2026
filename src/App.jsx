@@ -1,10 +1,11 @@
-import { Route, Routes, Navigate, Link, useLocation } from 'react-router-dom'
+import { Route, Routes, Navigate, Link } from 'react-router-dom'
 import './App.css'
 import { AuthProvider, useAuth } from './auth/AuthContext'
 import Login from './auth/Login'
 import Signup from './auth/Signup'
 import Dashboard from './dashboard/Dashboard'
 import NotFound from './NotFound'
+
 
 
 function ProtectedRoute({ children }) {
