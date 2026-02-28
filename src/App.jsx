@@ -6,6 +6,7 @@ import Signup from './auth/Signup'
 import Dashboard from './dashboard/Dashboard'
 import NotFound from './NotFound'
 
+
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth()
   const location = useLocation()

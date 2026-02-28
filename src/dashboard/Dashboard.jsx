@@ -1,48 +1,33 @@
-import { NavLink, Routes, Route, Navigate } from 'react-router-dom'
-import LostFound from './LostFound'
-import Complaints from './Complaints'
-import Volunteers from './Volunteers'
-import Overview from './Overview'
-import AdminPanel from './AdminPanel'
-import { useAuth } from '../auth/AuthContext'
+import { Routes, Route, Link } from 'react-router-dom';
+import Complaints from './Complaints';
+// import Volunteers from './Volunteers'; // Jab aap bana lein
+// import Overview from './Overview';
 
 export default function Dashboard() {
-  const { isAdmin } = useAuth()
-
-  const navClass = ({ isActive }) =>
-    `block w-full text-left px-4 py-3 rounded-xl font-medium transition ${isActive ? 'bg-[#0057a8] text-white shadow-md' : 'text-gray-700 hover:bg-gray-100'}`
-
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex flex-col lg:flex-row gap-6">
-        <div className="w-full lg:w-56 shrink-0">
-          <div className="rounded-2xl bg-white/80 backdrop-blur shadow-lg border border-gray-200/60 p-2 mb-4">
-            <h4 className="px-3 py-2 text-sm font-bold text-[#0057a8]">Campus Dashboard</h4>
-            <p className="px-3 pb-3 text-xs text-gray-600">
-              Lost &amp; found, complaints, volunteers.
-            </p>
-          </div>
-          <nav className="rounded-2xl bg-white/80 backdrop-blur shadow-lg border border-gray-200/60 p-2 space-y-1">
-            <NavLink to="" end className={navClass}>Overview</NavLink>
-            <NavLink to="lost-found" className={navClass}>Lost &amp; Found</NavLink>
-            <NavLink to="complaints" className={navClass}>Complaints</NavLink>
-            <NavLink to="volunteers" className={navClass}>Volunteers</NavLink>
-            {isAdmin && <NavLink to="admin" className={navClass}>Admin Panel</NavLink>}
-          </nav>
+    <div className="container mx-auto px-4 flex gap-6">
+      {/* Sidebar Section */}
+      <aside className="w-64 space-y-2">
+        <div className="p-4 bg-white rounded-2xl shadow-sm border border-gray-100 mb-4">
+          <h2 className="font-bold text-[#0057a8]">Campus Dashboard</h2>
+          <p className="text-xs text-gray-500">Lost & found, complaints, volunteers.</p>
         </div>
-        <div className="flex-1 min-w-0 w-full lg:min-w-[400px]">
-          <Routes>
-            <Route index element={<Overview />} />
-            <Route path="lost-found" element={<LostFound />} />
-            <Route path="complaints" element={<Complaints />} />
-            <Route path="volunteers" element={<Volunteers />} />
-            {isAdmin && <Route path="admin" element={<AdminPanel />} />}
-            {/* any unknown sub-path inside dashboard will go back to Overview */}
-            <Route path="*" element={<Navigate to="." replace />} />
-          </Routes>
-        </div>
-      </div>
-    </div>
-  )
-}
 
+        <nav className="flex flex-col gap-1">
+          <Link to="/dashboard" className="px-4 py-3 rounded-xl hover:bg-gray-100 font-medium">Overview</Link>
+          <Link to="/dashboard/complaints" className="px-4 py-3 rounded-xl hover:bg-gray-100 font-medium text-gray-700">Complaints</Link>
+          <Link to="/dashboard/volunteers" className="px-4 py-3 rounded-xl hover:bg-gray-100 font-medium text-gray-700">Volunteers</Link>
+        </nav>
+      </aside>
+
+      {/* Content Section */}
+      <main className="flex-1">
+        <Routes>
+          <Route path="/" element={<div>Welcome to Overview</div>} />
+          <Route path="complaints" element={<Complaints />} />
+          <Route path="volunteers" element={<div>Volunteers Section (Coming Soon)</div>} />
+        </Routes>
+      </main>
+    </div>
+  );
+}
