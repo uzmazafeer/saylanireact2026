@@ -3,8 +3,6 @@ import {
   addDoc,
   collection,
   onSnapshot,
-  orderBy,
-  query,
   serverTimestamp,
 } from 'firebase/firestore'
 import html2canvas from 'html2canvas'
@@ -16,10 +14,9 @@ function VolunteerIdCard({ volunteer, cardRef }) {
   return (
     <div
       ref={cardRef}
-      className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-saylani-blue/20"
+      className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-[#0057a8]/30"
       style={{ width: '340px' }}
     >
-      {/* Header - Saylani colors */}
       <div className="bg-gradient-to-r from-[#0057a8] to-[#66b032] px-6 py-4 text-white">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
@@ -31,7 +28,6 @@ function VolunteerIdCard({ volunteer, cardRef }) {
           </div>
         </div>
       </div>
-      {/* Body */}
       <div className="p-6 space-y-4">
         <div className="flex justify-center">
           <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#0057a8] to-[#66b032] flex items-center justify-center text-2xl font-bold text-white">
@@ -60,14 +56,20 @@ export default function Volunteers() {
   const [loading, setLoading] = useState(false)
   const [volunteers, setVolunteers] = useState([])
   const [selectedForCard, setSelectedForCard] = useState(null)
+  const [error, setError] = useState(null)
   const cardRef = useRef(null)
 
   useEffect(() => {
-    const q = query(collection(db, 'volunteers'), orderBy('createdAt', 'desc'))
-    const unsub = onSnapshot(q, snapshot => {
-      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
-      setVolunteers(data)
-    })
+    const unsub = onSnapshot(
+      collection(db, 'volunteers'),
+      snapshot => {
+        const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }))
+        data.sort((a, b) => (b.createdAt?.toMillis?.() ?? 0) - (a.createdAt?.toMillis?.() ?? 0))
+        setVolunteers(data)
+        setError(null)
+      },
+      err => setError(err?.message || 'Could not load volunteers')
+    )
     return () => unsub()
   }, [])
 
@@ -75,6 +77,7 @@ export default function Volunteers() {
     e.preventDefault()
     if (!name?.trim() || !event?.trim() || !availability?.trim()) return
     setLoading(true)
+    setError(null)
     try {
       await addDoc(collection(db, 'volunteers'), {
         name: name.trim(),
@@ -87,7 +90,7 @@ export default function Volunteers() {
       setEvent('')
       setAvailability('')
     } catch (err) {
-      console.error(err)
+      setError(err?.message || 'Registration failed')
     } finally {
       setLoading(false)
     }
@@ -112,21 +115,25 @@ export default function Volunteers() {
   }
 
   return (
-    <div className="rounded-2xl bg-white/80 backdrop-blur shadow-lg border border-gray-200/60 overflow-hidden">
+    <div className="w-full min-h-[400px] rounded-2xl bg-white shadow-lg border border-gray-200 overflow-hidden">
       <div className="p-6">
-        <div className="mb-6">
-          <h5 className="text-xl font-bold text-[#0057a8]">Volunteer Registration</h5>
-          <p className="text-sm text-gray-600 mt-0.5">
-            Sign up for campus events. Download your volunteer ID card after registering.
-          </p>
-        </div>
+        <h2 className="text-2xl font-bold text-[#0057a8] mb-1">Volunteer Registration</h2>
+        <p className="text-gray-600 text-sm mb-6">
+          Sign up for campus events. Download your volunteer ID card after registering.
+        </p>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
             <input
               type="text"
-              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-[#0057a8]/30 focus:border-[#0057a8] outline-none"
+              className="w-full rounded-xl border-2 border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-[#0057a8]/30 focus:border-[#0057a8] outline-none"
               placeholder="Your full name"
               value={name}
               onChange={e => setName(e.target.value)}
@@ -137,7 +144,7 @@ export default function Volunteers() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Event</label>
             <input
               type="text"
-              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-[#0057a8]/30 focus:border-[#0057a8] outline-none"
+              className="w-full rounded-xl border-2 border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-[#0057a8]/30 focus:border-[#0057a8] outline-none"
               placeholder="Event name"
               value={event}
               onChange={e => setEvent(e.target.value)}
@@ -148,7 +155,7 @@ export default function Volunteers() {
             <label className="block text-sm font-medium text-gray-700 mb-1">Availability</label>
             <input
               type="text"
-              className="w-full rounded-xl border border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-[#0057a8]/30 focus:border-[#0057a8] outline-none"
+              className="w-full rounded-xl border-2 border-gray-300 px-4 py-2.5 focus:ring-2 focus:ring-[#0057a8]/30 focus:border-[#0057a8] outline-none"
               placeholder="e.g. Weekends, evenings"
               value={availability}
               onChange={e => setAvailability(e.target.value)}
@@ -159,17 +166,17 @@ export default function Volunteers() {
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 rounded-xl font-medium bg-gradient-to-r from-[#66b032] to-[#4bb543] text-white shadow-md hover:shadow-lg transition disabled:opacity-70"
+              className="px-6 py-2.5 rounded-xl font-medium bg-[#66b032] text-white border-2 border-[#66b032] hover:bg-[#55942a] transition disabled:opacity-70"
             >
               {loading ? 'Submitting...' : 'Register as Volunteer'}
             </button>
           </div>
         </form>
 
-        <h6 className="text-gray-700 font-semibold mb-3">Volunteer List</h6>
-        <div className="overflow-x-auto rounded-xl border border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">Volunteer List</h3>
+        <div className="overflow-x-auto rounded-xl border-2 border-gray-200 bg-gray-50/50">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-600 uppercase tracking-wider text-xs">
+            <thead className="bg-[#66b032] text-white">
               <tr>
                 <th className="px-4 py-3 rounded-tl-xl">Name</th>
                 <th className="px-4 py-3">Event</th>
@@ -177,16 +184,16 @@ export default function Volunteers() {
                 <th className="px-4 py-3 rounded-tr-xl text-right">ID Card</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody className="divide-y divide-gray-200 bg-white">
               {volunteers.length === 0 && (
                 <tr>
                   <td colSpan={4} className="px-4 py-8 text-center text-gray-500">
-                    No volunteers registered yet.
+                    No volunteers registered yet. Register using the form above.
                   </td>
                 </tr>
               )}
               {volunteers.map(v => (
-                <tr key={v.id} className="hover:bg-gray-50/50">
+                <tr key={v.id} className="hover:bg-gray-50">
                   <td className="px-4 py-3 font-medium text-gray-800">{v.name}</td>
                   <td className="px-4 py-3 text-gray-600">{v.event}</td>
                   <td className="px-4 py-3 text-gray-600">{v.availability}</td>
@@ -206,7 +213,6 @@ export default function Volunteers() {
         </div>
       </div>
 
-      {/* Modal: preview & download ID card */}
       {selectedForCard && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
@@ -223,14 +229,14 @@ export default function Volunteers() {
               <button
                 type="button"
                 onClick={handleDownloadIdCard}
-                className="px-5 py-2.5 rounded-xl font-medium bg-gradient-to-r from-[#0057a8] to-[#66b032] text-white"
+                className="px-5 py-2.5 rounded-xl font-medium bg-[#0057a8] text-white hover:bg-[#00467f]"
               >
                 Download as Image
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedForCard(null)}
-                className="px-5 py-2.5 rounded-xl font-medium border border-gray-300 text-gray-700 hover:bg-gray-50"
+                className="px-5 py-2.5 rounded-xl font-medium border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
               >
                 Close
               </button>

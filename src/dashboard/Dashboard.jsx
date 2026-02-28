@@ -30,7 +30,7 @@ export default function Dashboard() {
             {isAdmin && <NavLink to="admin" className={navClass}>Admin Panel</NavLink>}
           </nav>
         </div>
-        <div className="flex-1 min-w-0">
+        <div className="flex-1 min-w-0 w-full lg:min-w-[400px]">
           <Routes>
             <Route index element={<Overview />} />
             <Route path="lost-found" element={<LostFound />} />

@@ -8,61 +8,80 @@ export default function Overview() {
   const [lostCount, setLostCount] = useState(0)
   const [complaintsCount, setComplaintsCount] = useState(0)
   const [volunteersCount, setVolunteersCount] = useState(0)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    const unsubLost = onSnapshot(collection(db, 'lost_found_items'), snapshot => {
-      setLostCount(snapshot.docs.filter(d => d.data().userId === user?.uid).length)
-    })
-    const unsubComplaints = onSnapshot(collection(db, 'complaints'), snapshot => {
-      setComplaintsCount(snapshot.docs.filter(d => d.data().userId === user?.uid).length)
-    })
-    const unsubVolunteers = onSnapshot(collection(db, 'volunteers'), snapshot => {
-      setVolunteersCount(snapshot.docs.filter(d => d.data().userId === user?.uid).length)
-    })
+    if (!user?.uid) return
+    let unsubLost, unsubComplaints, unsubVolunteers
+    try {
+      unsubLost = onSnapshot(
+        collection(db, 'lost_found_items'),
+        snapshot => {
+          setLostCount(snapshot.docs.filter(d => d.data().userId === user?.uid).length)
+          setError(null)
+        },
+        err => setError(err?.message || 'Firestore error')
+      )
+      unsubComplaints = onSnapshot(
+        collection(db, 'complaints'),
+        snapshot => {
+          setComplaintsCount(snapshot.docs.filter(d => d.data().userId === user?.uid).length)
+          setError(null)
+        },
+        err => setError(err?.message || 'Firestore error')
+      )
+      unsubVolunteers = onSnapshot(
+        collection(db, 'volunteers'),
+        snapshot => {
+          setVolunteersCount(snapshot.docs.filter(d => d.data().userId === user?.uid).length)
+          setError(null)
+        },
+        err => setError(err?.message || 'Firestore error')
+      )
+    } catch (err) {
+      setError(err?.message || 'Could not load counts')
+    }
     return () => {
-      unsubLost()
-      unsubComplaints()
-      unsubVolunteers()
+      if (typeof unsubLost === 'function') unsubLost()
+      if (typeof unsubComplaints === 'function') unsubComplaints()
+      if (typeof unsubVolunteers === 'function') unsubVolunteers()
     }
   }, [user?.uid])
 
   return (
-    <div className="row g-3">
-      <div className="col-md-4">
-        <div className="card shadow-sm border-0 overview-card overview-lost">
-          <div className="card-body">
-            <h6 className="text-uppercase small text-muted mb-1">Lost &amp; Found</h6>
-            <h2 className="mb-0 text-white">{lostCount}</h2>
-            <p className="mb-0 small text-white-50">Items you posted</p>
-          </div>
+    <div className="w-full min-h-[400px]">
+      {error && (
+        <div className="mb-4 p-3 rounded-xl bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+          {error}
+        </div>
+      )}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="rounded-2xl bg-gradient-to-br from-[#0057a8] to-[#4bb543] p-5 text-white shadow-lg">
+          <h6 className="text-xs font-semibold uppercase tracking-wider text-white/80 mb-1">
+            Lost &amp; Found
+          </h6>
+          <p className="text-3xl font-bold">{lostCount}</p>
+          <p className="text-sm text-white/80 mt-0.5">Items you posted</p>
+        </div>
+        <div className="rounded-2xl bg-gradient-to-br from-[#ff7f50] to-[#ffb347] p-5 text-white shadow-lg">
+          <h6 className="text-xs font-semibold uppercase tracking-wider text-white/80 mb-1">
+            Complaints
+          </h6>
+          <p className="text-3xl font-bold">{complaintsCount}</p>
+          <p className="text-sm text-white/80 mt-0.5">Submitted by you</p>
+        </div>
+        <div className="rounded-2xl bg-gradient-to-br from-[#66b032] to-[#2e8b57] p-5 text-white shadow-lg">
+          <h6 className="text-xs font-semibold uppercase tracking-wider text-white/80 mb-1">
+            Volunteer
+          </h6>
+          <p className="text-3xl font-bold">{volunteersCount}</p>
+          <p className="text-sm text-white/80 mt-0.5">Events you joined</p>
         </div>
       </div>
-      <div className="col-md-4">
-        <div className="card shadow-sm border-0 overview-card overview-complaints">
-          <div className="card-body">
-            <h6 className="text-uppercase small text-muted mb-1">Complaints</h6>
-            <h2 className="mb-0 text-white">{complaintsCount}</h2>
-            <p className="mb-0 small text-white-50">Submitted by you</p>
-          </div>
-        </div>
-      </div>
-      <div className="col-md-4">
-        <div className="card shadow-sm border-0 overview-card overview-volunteers">
-          <div className="card-body">
-            <h6 className="text-uppercase small text-muted mb-1">Volunteer</h6>
-            <h2 className="mb-0 text-white">{volunteersCount}</h2>
-            <p className="mb-0 small text-white-50">Events you joined</p>
-          </div>
-        </div>
-      </div>
-      <div className="col-12">
-        <div className="alert alert-info border-0 shadow-sm small mb-0">
-          Use the left sidebar to post lost &amp; found items, submit complaints, or
-          register as a volunteer. All records are linked to your account and update
-          in real time from Firestore.
-        </div>
+      <div className="mt-6 p-4 rounded-xl bg-sky-50 border border-sky-200 text-sky-800 text-sm">
+        Use the left sidebar to post lost &amp; found items, submit complaints, or register as a
+        volunteer. All records are linked to your account and update in real time from Firestore.
       </div>
     </div>
   )
 }
-
